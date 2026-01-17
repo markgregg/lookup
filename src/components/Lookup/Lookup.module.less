@@ -1,0 +1,293 @@
+/**
+ * Lookup component styles
+ * Variables are defined in Lookup.variables.less
+ */
+
+@import './Lookup.variables.less';
+
+// Screen reader only class - hides elements visually but keeps them accessible
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.lookupContainer {
+  position: relative;
+  width: 100%;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.inputWrapper {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+}
+
+.inputBox {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: @size-input-height;
+  box-sizing: border-box;
+  border: 1px solid @color-border-default;
+  border-radius: @size-border-radius;
+  background-color: @color-background-input;
+  padding: 0 @size-padding-horizontal;
+  gap: @size-padding-horizontal;
+  transition: border-color @timing-transition;
+  min-width: 0;
+
+  &.dropdown {
+    background-color: @color-background-dropdown;
+  }
+
+  &.error {
+    border-color: #d32f2f;
+
+    &:focus-within {
+      border-color: #d32f2f;
+    }
+  }
+
+  &:focus-within {
+    border-color: @color-border-focus;
+  }
+}
+
+.pills {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: @size-padding-vertical-item @size-padding-horizontal-item;
+  background-color: @color-pill-background;
+  border: 1px solid @color-pill-border;
+  border-radius: @size-border-radius;
+  font-size: 12px;
+  color: @color-pill-text;
+  max-width: @size-pill-max-width;
+  flex-shrink: 0;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.summaryPill {
+  display: flex;
+  align-items: center;
+  padding: @size-padding-vertical-item @size-padding-horizontal-item;
+  background-color: @color-pill-background;
+  border: 1px solid @color-pill-border;
+  border-radius: @size-border-radius;
+  font-size: 12px;
+  color: @color-pill-text;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pillRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  color: @color-pill-text;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: all @timing-transition;
+  border-radius: 2px;
+
+  &:hover {
+    background-color: @color-pill-border;
+    color: #fff;
+  }
+}
+
+.singleValue {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: @color-text-primary;
+  padding: 2px 0;
+}
+
+.input {
+  flex: 1;
+  min-width: 80px;
+  padding: 0;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background-color: transparent;
+
+  &::placeholder {
+    color: @color-text-secondary;
+  }
+
+  &:disabled {
+    color: @color-text-secondary;
+  }
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: @size-icon;
+  height: @size-icon;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  border-radius: 2px;
+  color: @color-text-muted;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: all @timing-transition;
+  user-select: none;
+
+  &:hover {
+    background-color: @color-text-muted;
+    color: #fff;
+  }
+}
+
+.dropdownArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: @size-icon;
+  height: @size-icon;
+  color: @color-text-muted;
+  transition: transform @timing-transition;
+  cursor: pointer;
+  user-select: none;
+  margin-left: auto;
+  flex-shrink: 0;
+
+  &.open {
+    transform: rotateX(180deg);
+  }
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: @size-icon;
+  height: @size-icon;
+  font-size: 12px;
+  animation: spin @timing-spin linear infinite;
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: @size-icon;
+  height: @size-icon;
+  color: @color-text-muted;
+  font-size: 16px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.dropdownList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: @color-background-input;
+  border: 1px solid @color-border-default;
+  border-radius: @size-border-radius;
+  box-shadow: 0 4px 12px @color-dropdown-shadow;
+  z-index: @z-dropdown;
+  overflow-y: auto;
+  max-height: @size-max-height-default;
+  padding: @size-padding-horizontal;
+
+  &.above {
+    top: auto;
+    bottom: 100%;
+  }
+}
+
+.loadingMessage,
+.noResults {
+  padding: 16px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.noResults {
+  color: #999;
+}
+.errorMessage {
+  padding: 8px 8px;
+  margin-top: 4px;
+  background-color: #ffebee;
+  border-left: 3px solid #d32f2f;
+  border-radius: 2px;
+  color: #c62828;
+  font-size: 12px;
+  line-height: 1.4;
+  animation: slideDown 0.2s ease-out;
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

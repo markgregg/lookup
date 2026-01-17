@@ -1,0 +1,32 @@
+.listItem {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+
+    &.selected {
+        background-color: lightblue;
+    }
+
+    &.hovered {
+        background-color: lightgray;
+    }
+
+    &.keyboardFocused {
+        background-color: #e3f2fd;
+        outline: 2px solid #4a90e2;
+        outline-offset: -2px;
+    }
+}
+
+.separator {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+
+.checkbox {
+    margin-right: 8px;
+}
