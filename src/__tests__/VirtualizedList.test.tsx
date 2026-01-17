@@ -44,10 +44,11 @@ describe('VirtualizedList', () => {
   });
 
   it('renders checkboxes when multipleSelect is true', () => {
+    const items = ['A', 'B'];
     render(
-      <VirtualizedList
-        items={['A', 'B']}
-        selected={[]}
+      <VirtualizedList<string>
+        items={items}
+        selected={[] as string[]}
         multipleSelect
       />
     );
@@ -59,10 +60,11 @@ describe('VirtualizedList', () => {
   it('toggles selection off when clicking selected item in multiple mode', () => {
     const onSelect = vi.fn();
 
+    const items = ['A', 'B'];
     render(
-      <VirtualizedList
-        items={['A', 'B']}
-        selected={['A']}
+      <VirtualizedList<string>
+        items={items}
+        selected={['A'] as string[]}
         multipleSelect
         onSelect={onSelect}
       />

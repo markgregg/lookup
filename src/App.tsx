@@ -1,9 +1,7 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { VirtualizedList } from './components/VirtualizedList/VirtualizedList'
-import { Lookup } from './components/Lookup'
+import { useState } from 'react';
+import './App.css';
+import { VirtualizedList } from './components/VirtualizedList/VirtualizedList';
+import { Lookup } from './components/Lookup';
 
 interface Fruit {
   name: string;
@@ -13,11 +11,10 @@ interface Fruit {
 interface Country {
   id: number;
   name: string;
-  code: string;
+  code: string; 
 }
 
 function App() {
-  const [count, setCount] = useState(0)
 
   const stringItems = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew'];
   const fruitItems: Fruit[] = [
@@ -70,16 +67,8 @@ function App() {
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React + Virtualized List</h1>
-      <div style={{ display: 'flex', gap: '20px' }}>
+      <h1>Virtualized List Examples</h1>
+      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
         <div>
           <h2>String List (Single Select)</h2>
           <VirtualizedList
@@ -220,7 +209,7 @@ function App() {
             items={stringItems}
             selected={lookupStringDropdown}
             onSelect={(s) => setLookupStringDropdown(Array.isArray(s) ? (s[0] ?? '') : s)}
-            showAbove={true}
+            dropdownPosition="above"
             placeholder="Dropdown shows above..."
           />
           <p style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
@@ -304,19 +293,24 @@ function App() {
             (Shows horizontal separators, max height 150px)
           </p>
         </div>
+
+        <div style={{ border: '1px solid #e0e0e0', padding: '20px', borderRadius: '8px' }}>
+          <h3>Auto-Position Dropdown</h3>
+          <Lookup<string>
+            type="combobox"
+            items={stringItems}
+            selected={lookupStringCombobox}
+            onSelect={(s) => setLookupStringCombobox(Array.isArray(s) ? (s[0] ?? '') : s)}
+            dropdownPosition="auto"
+            placeholder="Auto-positioned dropdown..."
+            maxHeight={80}
+            dropdownWidth={140}
+          />
+          <p style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
+            (Dropdown automatically positions based on available space: below → right → left → above)
+          </p>
+        </div>
       </div>
-      <hr style={{ margin: '40px 0' }} />
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }

@@ -14,6 +14,8 @@ type SourceCallback<T> = (searchText: string) => Promise<T[]>;
  */
 type ObjectItem = Record<string, any>;
 
+export type DropdownPosition = 'auto' | 'below' | 'above' | 'left' | 'right';
+
 export type LookupProps<T extends string | ObjectItem> = {
   /**
    * The source of items - can be a static list or a callback function
@@ -75,9 +77,9 @@ export type LookupProps<T extends string | ObjectItem> = {
   styles?: React.CSSProperties;
 
   /**
-   * Show dropdown above the input instead of below
+   * Dropdown placement. 'auto' tries below, then right, then left, then above based on available space.
    */
-  showAbove?: boolean;
+  dropdownPosition?: DropdownPosition;
 
   /**
    * Placeholder text for the input
@@ -129,7 +131,7 @@ export type LookupProps<T extends string | ObjectItem> = {
   minSearchLength?: number;
 };
 
-export const Lookup = <T extends string | ObjectItem>(
+export const Lookup = <T extends string | ObjectItem = string>(
 {
   items,
   selected,
@@ -141,7 +143,7 @@ export const Lookup = <T extends string | ObjectItem>(
   matchFields,
   renderer,
   rowHeight = 32,
-  showAbove = false,
+  dropdownPosition = 'below',
   placeholder,
   maxHeight = 300,
   disabled = false,
@@ -187,6 +189,7 @@ export const Lookup = <T extends string | ObjectItem>(
   const displayValueRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [resolvedPosition, setResolvedPosition] = useState<DropdownPosition>('below');
 
   // Convert selected value to array for easier manipulation
   const selectedArray = useMemo(() => {
@@ -300,17 +303,6 @@ export const Lookup = <T extends string | ObjectItem>(
     },
     [isCallback, items, filterItems, baseItems, type, debounceMs, minSearchLength]
   );
-
-  // Improved focus restoration after selection
-  const restoreFocus = useCallback(() => {
-    if (type === 'dropdown') {
-      // For dropdown, restore focus to the container (which is focusable)
-      containerRef.current?.focus();
-    } else {
-      // For combobox, restore focus to the input
-      inputRef.current?.focus();
-    }
-  }, [type]);
 
   // Announce selection to screen readers
   const announceSelection = useCallback((item: any) => {
@@ -523,6 +515,53 @@ export const Lookup = <T extends string | ObjectItem>(
     maxHeight
   );
 
+  // Resolve dropdown position based on available space when open
+  useEffect(() => {
+    if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const availableBottom = window.innerHeight - rect.bottom;
+    const availableTop = rect.top;
+    const availableRight = window.innerWidth - rect.right;
+    const availableLeft = rect.left;
+    // For horizontal positioning, dropdown starts at container top and extends down
+    const availableFromTop = window.innerHeight - rect.top;
+
+    const estimatedHeight = Math.min(listHeight || maxHeight, maxHeight);
+    const estimatedWidth = dropdownWidth === 'auto'
+      ? rect.width
+      : typeof dropdownWidth === 'number'
+        ? dropdownWidth
+        : rect.width;
+
+    const chooseAutoPosition = (): DropdownPosition => {
+      // Prefer below if there's space
+      if (availableBottom >= estimatedHeight) return 'below';
+      
+      // For horizontal positions, check if width fits AND if height fits from top of container down
+      const canFitRight = availableRight >= estimatedWidth && availableFromTop >= estimatedHeight;
+      const canFitLeft = availableLeft >= estimatedWidth && availableFromTop >= estimatedHeight;
+      
+      // If both sides fit, choose the one with more space
+      if (canFitRight && canFitLeft) {
+        return availableLeft > availableRight ? 'left' : 'right';
+      }
+      if (canFitRight) return 'right';
+      if (canFitLeft) return 'left';
+      
+      // Try above if there's space
+      if (availableTop >= estimatedHeight) return 'above';
+      
+      // Default to below even if it doesn't fit
+      return 'below';
+    };
+
+    const next = dropdownPosition === 'auto' ? chooseAutoPosition() : dropdownPosition;
+    setResolvedPosition(next);
+  }, [isOpen, dropdownPosition, listHeight, maxHeight, dropdownWidth]);
+
   // Calculate container width style
   const containerWidthStyle = useMemo(() => {
     if (inputWidth === 'auto') {
@@ -540,7 +579,8 @@ export const Lookup = <T extends string | ObjectItem>(
     } else if (typeof dropdownWidth === 'number') {
       return { width: `${dropdownWidth}px` };
     }
-    return {};
+    // Default: match container width
+    return { width: '100%' };
   }, [dropdownWidth]);
 
   // Handle input box click
@@ -631,8 +671,16 @@ export const Lookup = <T extends string | ObjectItem>(
 
   // Get dropdown list className
   const dropdownListClassName = useMemo(() => {
-    return `${styles.dropdownList} ${showAbove ? styles.above : ''} ${className || ''}`;
-  }, [showAbove, className]);
+    const positionClass =
+      resolvedPosition === 'above'
+        ? styles.above
+        : resolvedPosition === 'right'
+          ? styles.right
+          : resolvedPosition === 'left'
+            ? styles.left
+            : '';
+    return `${styles.dropdownList} ${positionClass} ${className || ''}`;
+  }, [resolvedPosition, className]);
 
   // Get dropdown arrow className
   const dropdownArrowClassName = useMemo(() => {

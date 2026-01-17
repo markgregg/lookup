@@ -36,7 +36,7 @@ type VirtualizedListProps<T> = T extends string
     ? ObjectListProps<T>
     : never;
 
-export const VirtualizedList = <T extends string | object>(props: VirtualizedListProps<T>) => {
+export const VirtualizedList = <T extends string | object = string>(props: VirtualizedListProps<T>) => {
   const { items, selected, multipleSelect = false, onSelect, styles, className, focusedIndex = -1, listRef, showSeparator = false } = props;
   const rowHeight = (props as any).rowHeight || 32;
   const isStringList = items.length > 0 && typeof items[0] === 'string';
